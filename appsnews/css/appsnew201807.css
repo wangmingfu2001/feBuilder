@@ -1,0 +1,7 @@
+.contrastBtn{ background: none;border:1px solid #ccc;font-size:12px; display:block;margin-bottom:10px;}
+.no{ background:#CCCCCC;}
+
+.vsiconbox{position:fixed;right:10px;top:10px;width:100px;height:100px; background: #333;}
+.vsiconbox i{background:red;position: absolute;left :-5px;top:-5px;width:10px;height:10px; display: block;border-radius:5px;display: none;}
+
+.Datadown em{float:left;}
