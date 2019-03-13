@@ -1,16 +1,20 @@
 ﻿/**
- * 58车前端框架
+ * 前端底层代码
  * @mm
- * @date    2018-11-07 18:00
- * @version 3.0
+ * @date    2019-03-13
+ * @version 1.0
  * @依赖：无
- *	@其他：3.0重构了 定位系统，除了整合流程里的定位，额外暴露全局定位方法，随时可使用
+ *	@其他：第一版js底层文件，包含 命名空间，基础函数，数据缓存系统，服务系统，插件系统，页面构建系统
+ * @保留字：全局变量fe保留，fe的属性追加，请先查看fe的所有属性，或者使用fe.has('属性名')来验证
  **/
 ;
-if(typeof che != 'undefined'){
-	throw "che conflict";
+if(typeof fe != 'undefined'){
+	throw "fe conflict";
 }
-window.che = {
+window.fe = {
+	has : function(property){
+		alert(this.hasOwnProperty(property));
+	},
 	/*
 		获取dom - mm - 18/08/07
 		参数说明：
@@ -50,8 +54,8 @@ window.che = {
 
 	},
 
-	//che.g的别名
-	$ : function(arg){ return che.g(arg); },
+	//fe.g的别名
+	$ : function(arg){ return fe.g(arg); },
 
 	//下一个兄弟节点
 	/*next : function(obj,ele){
@@ -600,71 +604,69 @@ window.che = {
 			}
 			return el;
 		}
-	}
-};
-
-if(typeof $=='undefined'){
-	window.$ = che.$;
-}
-//新增正则
-// 正则验证
-che.check = {
-	'isEmpty':function (val,unit) {
-		if (unit) {
-			var endIndex = val.indexOf(unit),result=$.trim(val.substring(endIndex));
-		}else{
-			var result=$.trim(val);
-		}
-		return result!=='-1' && !!result;
 	},
-	'isMobile':function(val){
-		var reg= /^1[3|4|5|7|8|9][0-9][\d]{8}$/;
-		return reg.test(val);
-	},
-	'isNormalCharater':function (val) {
-		var reg =/[^a-zA-Z|\d|\u4e00-\u9fa5]/g;
-		return !reg.test(val);
-	},
-	'onlyNumber':function (val) {
-		var reg =/^\d+(\.\d{1,2})?$/g;
-		return reg.test(val);
-	},
-	'onlyChinese':function(val){
-		var reg=/^[\u4e00-\u9fa5]+$/g;
-		return reg.test(val);
-	},
-	'onlyPositiveInteger':function(val){
-		var reg =/^(?:[1-9]\d*)$/g;
-		return reg.test(val);
-	},
-	'onlyInteger':function(val){
-		var reg =/^(?:\d+)$/g;
-		return reg.test(val)
-	},
-	'checkRadio':function(obj){
-		if ($('#'+obj).length<1) {
-			return false;
-		}else{
-			var result = $('#'+obj).find('input[type="radio"]:checked').length>0?true:false;
+	//正则验证
+	check : {
+		'isEmpty':function (val,unit) {
+			if (unit) {
+				var endIndex = val.indexOf(unit),result=$.trim(val.substring(endIndex));
+			}else{
+				var result=$.trim(val);
+			}
+			return result!=='-1' && !!result;
+		},
+		'isMobile':function(val){
+			var reg= /^1[3|4|5|7|8|9][0-9][\d]{8}$/;
+			return reg.test(val);
+		},
+		'isNormalCharater':function (val) {
+			var reg =/[^a-zA-Z|\d|\u4e00-\u9fa5]/g;
+			return !reg.test(val);
+		},
+		'onlyNumber':function (val) {
+			var reg =/^\d+(\.\d{1,2})?$/g;
+			return reg.test(val);
+		},
+		'onlyChinese':function(val){
+			var reg=/^[\u4e00-\u9fa5]+$/g;
+			return reg.test(val);
+		},
+		'onlyPositiveInteger':function(val){
+			var reg =/^(?:[1-9]\d*)$/g;
+			return reg.test(val);
+		},
+		'onlyInteger':function(val){
+			var reg =/^(?:\d+)$/g;
+			return reg.test(val)
+		},
+		'checkRadio':function(obj){
+			if ($('#'+obj).length<1) {
+				return false;
+			}else{
+				var result = $('#'+obj).find('input[type="radio"]:checked').length>0?true:false;
+				return result;
+			}
+		},
+		'checkboxSelected':function(obj){
+			if ($('#'+obj).length<1) {
+				return;
+			};
+			var result= $('#'+obj).find('input[type="checkbox"]:checked').length>0?true:false;
 			return result;
+		},
+		'carLicenseNum':function(val){
+			var reg=/^(([京津冀晋鲁豫辽吉黑蒙陕宁甘新藏云川渝湘鄂皖苏沪浙闽粤贵桂赣琼港澳台军空海北沈兰济南广成使领][A-HJ-NP-Za-hj-np-z])([A-HJ-NP-Za-hj-np-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf]))$/g
+			return reg.test(val);
+		},
+		'bankCard':function (val) {
+			var reg = /^(\d{16}|\d{19})$/;
+			return reg.test(val);
 		}
-	},
-	'checkboxSelected':function(obj){
-		if ($('#'+obj).length<1) {
-			return;
-		};
-		var result= $('#'+obj).find('input[type="checkbox"]:checked').length>0?true:false;
-		return result;
-	},
-	'carLicenseNum':function(val){
-		var reg=/^(([京津冀晋鲁豫辽吉黑蒙陕宁甘新藏云川渝湘鄂皖苏沪浙闽粤贵桂赣琼港澳台军空海北沈兰济南广成使领][A-HJ-NP-Za-hj-np-z])([A-HJ-NP-Za-hj-np-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf]))$/g
-		return reg.test(val);
-	},
-	'bankCard':function (val) {
-		var reg = /^(\d{16}|\d{19})$/;
-		return reg.test(val);
 	}
 };
+if(typeof $=='undefined'){
+	window.$ = fe.$;
+}
 //帧定时器
 window.requestAnimFrame = (function() {
 	return window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
@@ -728,8 +730,8 @@ window.requestAnimFrame = (function() {
 ;(function(global,doc,factoryFn){
 	var factory = factoryFn(global,doc);
 	//che接口
-	che.touch = window.touch || factory;
-	window.touch = che.touch;
+	fe.touch = window.touch || factory;
+	window.touch = fe.touch;
 })(this,document,function(window,document){
 	//class-touch
 	var Touch = new Function();
@@ -1076,183 +1078,140 @@ window.requestAnimFrame = (function() {
 	};
 });
 
-/**
- * 城市定位2018 - 模块版   mm 2018-05-22
- *
- * 说明：
- * getGeolocation2018 仅作为框架模块引入，删掉了cookie，jsonp
- * getGeolocation2018去掉了上一版大部分的回调，只保留函数 position58che，参数为定位类型(ip,exact) 和 回调，回调的两个参数，一个是城市数据，第二个是日志
- *
- * 返回数据 同 getGeolocation2017.js
- *  name => 城市名字
- *  sid  => 分站ID
- *  mUrl => 触屏版分站行情url
- *  url  => 分站url
- *  provinceid => 省份ID
- *  cityid => 城市ID
- *  classid => 分站文章类别ID
- *  pingyin => 分站拼音
- *  isSub => 1 来自坐标定位 2 ip识别 3 分站没有数据默认北京 4 手工选择的分站数据 0没有得到城市取默认北京市
- *
- * */
 
-;(function(){
-	var _isQQP = false;
-	var _ipc = che.cookie('Xgo_GeolocationInfo');
-	var _exactc = che.cookie('Xgo_GeolcationInfo_new');
-	var _cdata = null;
-	var _cb = null;
-	var _qqmsg = '';
+/* promise兼容 */
 
-	che.position = function(getType,cb){
-		_cb = cb || function(){};
-		getType = getType || 'ip';
-		var _from = che.getUrlKey('from');
-
-		//58app定位
-		var ua = navigator.userAgent.toLowerCase();
-		if (ua.match(/WUBA/i) == "wuba") {
-			if(typeof WBAPP !='undefined' && typeof WBAPP.action !='undefined'){
-				WBAPP.action.getUserInfo("cid", function(cid){
-					_qqmsg += '获取58城市完成。\n';
-					che.jsonp("//m.58che.com/index.php?c=ajax_City", { "status": 1, "cid": cid},'msg',
-					function(cData) {
-						che.cookie("pos58",JSON.stringify(cData),{expires:1,path:"/",domain:"58che.com"});
-						//兼容底价新车老cookie
-						var appsCCval = cData.cityid+";;;"+cData.name;
-						che.cookie("appsCtCity",appsCCval,{expires:1,path:"/",domain:"58che.com"});
-						_qqmsg += '城市解析完成。';
-						_cb(cData,_qqmsg);
-					});
-				});
-			}else{
-				throw 'jssdk 未引入';
-			}
-			return;
-		}
-
-		if (_ipc !== null) {
-			var cityArr = _ipc.split('@');
-			var obj = {};
-			for (var i in cityArr) {
-				var _cityArr = cityArr[i].split('=');
-				if ('url' == _cityArr[0] || 'mUrl' == _cityArr[0]) {
-					obj[_cityArr[0]] = decodeURIComponent(_cityArr[1]);
-				} else {
-					obj[_cityArr[0]] = _cityArr[1];
-				}
-			}
-			if(obj.name){
-				obj.name = decodeURI(obj.name);
-			}
-
-			_cdata = obj; //赋值新城市数据（可能切换过
-			if(getType == 'ip') {
-				_cb(_cdata,'开启了IP定位，结果读取cookie');
-				return;
-			}
-		}
-
-		if (_exactc !== null && _cdata) {
-			_cdata.pos = JSON.parse(_exactc);
-			var isNowCity = (_cdata.name == _cdata.pos.city) || (_cdata.name ==  _cdata.pos.city.slice(0,-1));
-			_cdata.pos.isNowCity = isNowCity;
-			if(getType != 'ip') {
-				_cb(_cdata,'开启了精确定位，结果读取cookie');
-			}
-		}else {
-			//没有任何缓存，但是从违章app里过来，忽略定位
-			if(typeof(_from)!='undefined' && _from=='weizhang'){
-				//
-			}else{
-				//没有任何缓存的情况走腾讯定位
-				che.loadJs('//apis.map.qq.com/tools/geolocation/min?key=WZFBZ-K5BKI-MKLGJ-5N5KN-IY576-NDBDJ&referer=myapp',function(){
-					var geolocation = new qq.maps.Geolocation();
-					//var geolocation = new qq.maps.Geolocation("WZFBZ-K5BKI-MKLGJ-5N5KN-IY576-NDBDJ", "myapp");
-					if(getType == 'ip'){
-						_qqmsg += '腾讯ip定位开始。  \n';
-						geolocation.getIpLocation(function (_pos) {
-							_qqmsg += '腾讯ip定位结束。  \n';
-							_qq_cb(_pos);
-						}, function(_pos){
-							if(!_pos){
-								_pos = {
-									"province":"北京市",
-									"city":"北京市",
-									"lat":39.90403,
-									"lng":116.407526
-								};
-							}
-							_qqmsg += 'ip定位失败,强制定位到北京。  \n';
-							_qq_cb(_pos);
+if(typeof window.Promise=='undefined'){
+	window.Promise = function(fn) {
+		var data = undefined, reason = undefined;
+		var succallbacks = [], failcallbacks = [];
+		var status = "pending";
+		this.then = function (fulfilled, rejected) {
+			return new Promise(function(resolve,reject) {    //返回一个新的promise
+				function suc(value) {   //成功
+					var ret = typeof fulfilled === 'function' && fulfilled(value) || value;
+					if( ret && typeof ret ['then'] == 'function'){    //判断 then中的 返回的是否是promise对象，如果是注册then方法
+						ret.then(function(value){
+							resolve(value);
 						});
-					}else{
-						_qqmsg += '精确定位开始。 \n';
-						geolocation.getLocation(function (_pos) {
-							_qqmsg += '精确定位结束。 \n';
-							_qq_cb(_pos);
-						}, function(_pos){
-							_qqmsg += '精确定位失败,又尝试一次IP定位。 \n ';
-							geolocation.getIpLocation(function (_pos) {
-								_qqmsg += 'ip定位结束。  \n';
-								_qq_cb(_pos);
-							}, function(_pos){
-								if(!_pos){
-									_pos = {
-										"province":"北京市",
-										"city":"北京市",
-										"lat":39.90403,
-										"lng":116.407526
-									};
-								}
-								_qqmsg += '腾讯ip定位失败,强制定位到了北京。  \n';
-								_qq_cb(_pos);
-							});
-
-							_qq_cb(_pos);
-						}, {timeout:8000,failTipFlag: true});
+					} else {
+						resolve(ret);
 					}
-				});
-			}
-		}
-	};
-	//腾讯定位回调
-	function _qq_cb(_pos){
-		if(_isQQP){return;}
-		_isQQP = true;
-		if(!_pos.lng){
-			_pos.lng = 116.40;
-			_pos.lat =  39.90;
-			_pos.city = '北京市';
-		}
-		//58che解析定位，得到更多城市信，后端写入城市cookie息
-		che.jsonp("//m.58che.com/index.php?c=ajax_City", {
-			"status" : status,
-			"lng" : _pos.lng,
-			"lat" : _pos.lat
-		},'msg',function(obj) {
-			if(obj){
-				if (1 == obj.status) {
-					//城市+经纬度回调
-					var isNowCity = (obj.name == _pos.city) || (obj.name == _pos.city.slice(0,-1));
-					obj.pos = {"lng" :_pos. lng, "lat" :_pos. lat,"city":_pos.city,"isNowCity":isNowCity};
-					_qqmsg += '位置解析完毕';
-					_cb(obj , _qqmsg);
-					//缓存城市+经纬度数，缓存 1.2 小时
-					che.cookie("Xgo_GeolcationInfo_new",JSON.stringify(obj.pos),{expires:0.05,path: '/', domain: '58che.com'});
-				} else {
-					_qqmsg += '位置解析失败，没有该城市 ';
-					_cb(obj , _qqmsg);
 				}
-			} else {
-				throw '位置解析失败';
-			}
-		});
-	}
-})();
+				function errback(reason) {  //失败
+					reason = typeof rejected === 'function'  && rejected(reason) || reason;
+					reject(reason);
+				}
+				if (status === 'pending') {
+					succallbacks.push(suc);
+					failcallbacks.push(errback);
+				} else if(status === 'fulfilled'){
+					suc(data);
+				} else {
+					errback(reason);
+				}
+			})
+		}
 
-/****   框架部分   ****/
-che.page = function(arg){
+		function resolve(value) {
+			setTimeout(function () {   //加入延时
+				status = "fulfilled";
+				data = value;
+				succallbacks.forEach(function(callback){
+					callback(value);
+				});
+			}, 0);
+		}
+
+		function reject(value) {
+			setTimeout(function () {
+				status = "rejected";
+				reason = value;
+				succallbacks.forEach(function(callback){
+					callback(value);
+				});
+			}, 0);
+		}
+		fn(resolve, reject);
+	}
+}
+
+
+
+/****   数据   ****/
+window.cacheDatas = {};
+//ls cache
+!function(a,b){"function"==typeof define&&define.amd?define([],b):"undefined"!=typeof module&&module.exports?module.exports=b():a.lscache=b()}(this,function(){function a(){var a="__lscachetest__",c=a;if(void 0!==n)return n;try{if(!localStorage)return!1}catch(a){return!1}try{h(a,c),i(a),n=!0}catch(a){n=!(!b(a)||!localStorage.length)}return n}function b(a){return!!(a&&"QUOTA_EXCEEDED_ERR"===a.name||"NS_ERROR_DOM_QUOTA_REACHED"===a.name||"QuotaExceededError"===a.name)}function c(){return void 0===o&&(o=null!=window.JSON),o}function d(a){return a.replace(/[[\]{}()*+?.\\^$|]/g,"\\$&")}function e(a){return a+q}function f(){return Math.floor((new Date).getTime()/s)}function g(a){return localStorage.getItem(p+u+a)}function h(a,b){localStorage.removeItem(p+u+a),localStorage.setItem(p+u+a,b)}function i(a){localStorage.removeItem(p+u+a)}function j(a){for(var b=new RegExp("^"+p+d(u)+"(.*)"),c=localStorage.length-1;c>=0;--c){var f=localStorage.key(c);f=f&&f.match(b),f=f&&f[1],f&&f.indexOf(q)<0&&a(f,e(f))}}function k(a){var b=e(a);i(a),i(b)}function l(a){var b=e(a),c=g(b);if(c){var d=parseInt(c,r);if(f()>=d)return i(a),i(b),!0}}function m(a,b){v&&"console"in window&&"function"==typeof window.console.warn&&(window.console.warn("lscache - "+a),b&&window.console.warn("lscache - The error was: "+b.message))}var n,o,p="lscache-",q="-cacheexpiration",r=10,s=6e4,t=Math.floor(864e13/s),u="",v=!1,w={set:function(d,l,n){if(a()&&c()){try{l=JSON.stringify(l)}catch(a){return}try{h(d,l)}catch(a){if(!b(a))return void m("Could not add item with key '"+d+"'",a);var o,p=[];j(function(a,b){var c=g(b);c=c?parseInt(c,r):t,p.push({key:a,size:(g(a)||"").length,expiration:c})}),p.sort(function(a,b){return b.expiration-a.expiration});for(var q=(l||"").length;p.length&&q>0;)o=p.pop(),m("Cache is full, removing item with key '"+d+"'"),k(o.key),q-=o.size;try{h(d,l)}catch(a){return void m("Could not add item with key '"+d+"', perhaps it's too big?",a)}}n?h(e(d),(f()+n).toString(r)):i(e(d))}},get:function(b){if(!a())return null;if(l(b))return null;var d=g(b);if(!d||!c())return d;try{return JSON.parse(d)}catch(a){return d}},remove:function(b){a()&&k(b)},supported:function(){return a()},flush:function(){a()&&j(function(a){k(a)})},flushExpired:function(){a()&&j(function(a){l(a)})},setBucket:function(a){u=a},resetBucket:function(){u=""},enableWarnings:function(a){v=a}};return w});
+
+
+//type有四个值，temp(临时内存变量)，ss(sessionstory)，ls(localstory)，cookie(cookie)
+//示例
+/*
+setCache({
+	key : 'code',
+	val : {a:55,gg:{b:456}},
+	time: 1,//分
+	type : 'ss'
+});
+*/
+getCache('code');
+window.setCache = fe.setCache = function(arg){
+	if(typeof cacheDatas !='object'){
+		throw '缓存变量cacheDatas丢失';
+	}
+	if(!arg || !arg.key || !arg.val){ return; }
+
+	switch (arg.type){
+		case 'ss':
+			sessionStorage.setItem(arg.key,arg.val);
+		break;
+		case 'ls' :
+			lscache.set(arg.key,arg.val,Number(arg.time));
+		break;
+		case 'cookie' :
+			var _val = typeof arg.val=='object' ? JSON.stringify(arg.val) : arg.val;
+			fe.cookie(arg.key,_val,{
+				domain:'',
+				path:'/',
+				expires: Number(arg.time)/24/60
+			});
+		break;
+		default :
+			cacheDatas[arg.key] = arg.val;
+		break;
+	}
+}
+window.getCache = fe.setCache = function(key){
+	if(!key){ return null; }
+	if(cacheDatas[key]){
+		return cacheDatas[key];
+	}
+	if(sessionStorage.getItem(key)){
+		return sessionStorage.getItem(key);
+	}
+	if(lscache.get(key)){
+		return lscache.get(key);
+	}
+	if(fe.cookie(key)){
+		var _c = fe.cookie(key);
+		try{
+			return JSON.parse(_c);
+		}catch(e){
+			return _c;
+		}
+	}
+}
+
+/****   服务   ****/
+
+
+
+/****   插件   ****/
+
+
+
+/****   page   ****/
+fe.page = function(arg){
 	return new Page('m',arg);
 }
 function Page(pageType,arg){
@@ -1291,7 +1250,7 @@ Page.prototype = {
 		//框架配置，页面域名和静态资源路径
 		this.data = {};
 		this.config = arg || {};
-		che.vm = this;
+		fe.vm = this;
 
 		//this.methos = (arg && arg.methods) || {};
 		var _httpStr = location.protocol!='http:'||location.protocol!='https:' ? 'http:' : '';
@@ -1338,7 +1297,7 @@ Page.prototype = {
 		//dom渲染完毕，js加载完毕，触发onReady
 		if(typeof this.config.onReady == 'function'){
 			var _this = this;
-			che.ready(function(){
+			fe.ready(function(){
 				_this.debug('onReady完毕');
 				_this.config.onReady();
 			});
@@ -1363,7 +1322,7 @@ Page.prototype = {
 					_loadModules();
 				}else{
 					//装载js
-					che.loadJs(_this.filePath+_modules[_moduleLoadIndex],function(){
+					fe.loadJs(_this.filePath+_modules[_moduleLoadIndex],function(){
 						_moduleLoadIndex++;
 						_loadModules();
 					});
@@ -1387,13 +1346,13 @@ Page.prototype = {
 		}
 
 		if(typeof _this.config.onLoad == 'function'){
-			che.bind(window,'load',function(){
+			fe.bind(window,'load',function(){
 				_this.config.onLoad();
 				_this.debug('onload完毕');
 			});
 		}
 		if(typeof _this.config.onShow == 'function'){
-			che.bind(window,'pageshow',function(){
+			fe.bind(window,'pageshow',function(){
 				_this.config.onShow();
 				_this.debug('onshow完毕');
 			});
@@ -1405,7 +1364,7 @@ Page.prototype = {
 			}, false);
 		}
 		if(typeof _this.config.onRsize == 'function'){
-			che.bind(window,'resize',function(){
+			fe.bind(window,'resize',function(){
 				_this.config.onRsize();
 			});
 		}
@@ -1422,7 +1381,7 @@ Page.prototype = {
 				isEnd : _top+_winH >= _pageHeight-60,
 				isTop : _top==0
 			};
-			che.bind(window,'scroll',function(){
+			fe.bind(window,'scroll',function(){
                 _top = document.documentElement.scrollTop||document.body.scrollTop;
                 _pageHeight = document.body.scrollHeight;
                 _re.scrollTop = _top;
@@ -1479,9 +1438,9 @@ Page.prototype = {
 	fn_user : function(cb){
 		var _this = this;
 		if(_this.config.userInfo){
-			var tmp1 = che.cookie('userId'), tmp2 = che.cookie('xgo_author');
+			var tmp1 = fe.cookie('userId'), tmp2 = fe.cookie('xgo_author');
 			if(tmp1){
-				che.jsonp('//m.'+_this.pageScene+'.58che.com/home.php?c=ajax_NmainPage&a=UserInfo',{
+				fe.jsonp('//m.'+_this.pageScene+'.58che.com/home.php?c=ajax_NmainPage&a=UserInfo',{
 					userId : tmp1,
 					xgoAuthor : tmp2
 				},'callback',function(data){
@@ -1508,22 +1467,10 @@ Page.prototype = {
 			return;
 		}
 		//移动端定位处理
-		che.position(_this.config.position,function(info,msg){
+		fe.position(_this.config.position,function(info,msg){
 			cb(info,msg);
 		});
 		//PC定位处理
-		/*FE_GetCityName.init({
-			//cityId : 189, //可指定城市id
-			//sid : 140, //也可指定分站id
-			cb : function(json){
-				cb(json,'PC定位完成');
-				//alert('当前城市：'+cData.cName+'\n更多城市信息请打印 cData');
-			},
-			overtime : 6000,  //【非必选参数】ip定位超时时间，默认6秒
-			isPosition : true,  //【非必选参数】是否开启ip定位，不开启默认北京
-			showCityWindow : false, //【非必选参数】默认是否显示城市弹窗
-			isSaveCookie : true //【非必选参数】是否存城市cookie，默认开启；开启定位（并且没有带入城市）的情况下，cookie会强制存储(php存储)
-		});*/
 	},
 	//用户画像获取
 	fn_face : function(cb){
@@ -1533,7 +1480,7 @@ Page.prototype = {
 			return;
 		}
 		if(_this.config.faceInfo){
-			che.jsonp('//apiche.58.com/index.php?r=face/v2/getInfo',{
+			fe.jsonp('//apiche.58.com/index.php?r=face/v2/getInfo',{
 				cookieid : typeof(id58) != 'undefined' ? (id58) : ''
 			},'callback',function(data) {
 				if(data && data.data){
@@ -1554,126 +1501,3 @@ Page.prototype = {
 		}
 	}
 };
-
-
-
-// 计算加载时间
-function getPerformanceTiming() {
-	var performance = window.performance;
-	if (!performance) {
-		// 当前浏览器不支持
-		console.log('你的浏览器不支持 performance');
-		return;
-	}
-	var t = performance.timing;
-	var times = {};
-	times.length = performance.getEntries().length;
-	//【重要】页面加载完成的时间
-	//【原因】这几乎代表了用户等待页面可用的时间
-	times.loadPage = t.loadEventEnd - t.navigationStart;
-	//【重要】解析 DOM 树结构的时间
-	//【原因】反省下你的 DOM 树嵌套是不是太多了！
-	times.domReady = t.domComplete - t.responseEnd;
-	//【重要】重定向的时间
-	//【原因】拒绝重定向！比如，http://example.com/ 就不该写成 http://example.com
-	times.redirect = t.redirectEnd - t.redirectStart;
-	//【重要】DNS 查询时间
-	//【原因】DNS 预加载做了么？页面内是不是使用了太多不同的域名导致域名查询的时间太长？
-	// 可使用 HTML5 Prefetch 预查询 DNS ，见：[HTML5 prefetch](http://segmentfault.com/a/1190000000633364)
-	times.lookupDomain = t.domainLookupEnd - t.domainLookupStart;
-	//【重要】读取页面第一个字节的时间
-	//【原因】这可以理解为用户拿到你的资源占用的时间，加异地机房了么，加CDN 处理了么？加带宽了么？加 CPU 运算速度了么？
-	// TTFB 即 Time To First Byte 的意思
-	// 维基百科：https://en.wikipedia.org/wiki/Time_To_First_Byte
-	times.ttfb = t.responseStart - t.navigationStart;
-	//【重要】内容加载完成的时间
-	//【原因】页面内容经过 gzip 压缩了么，静态资源 css/js 等压缩了么？
-	times.request = t.responseEnd - t.requestStart;
-	//【重要】执行 onload 回调函数的时间
-	//【原因】是否太多不必要的操作都放到 onload 回调函数里执行了，考虑过延迟加载、按需加载的策略么？
-	times.loadEvent = t.loadEventEnd - t.loadEventStart;
-	// DNS 缓存时间
-	times.appcache = t.domainLookupStart - t.fetchStart;
-	// 卸载页面的时间
-	times.unloadEvent = t.unloadEventEnd - t.unloadEventStart;
-	// TCP 建立连接完成握手的时间
-	times.connect = t.connectEnd - t.connectStart;
-	// domready时间
-	times.domready = t.domContentLoadedEventEnd  - t.navigationStart;
-	return times;
-}
-if(location.hash && location.hash.indexOf('speed_test')!=-1 && typeof(window.performance)!='undefined'){
-	var ___nowTimes__ = Math.ceil(performance.now());
-	var ___nowTimes__s = '';
-	window.addEventListener('load',function(){
-		setTimeout(function(){
-			var t = getPerformanceTiming(),lv=0;
-			if(t.ttfb>150){
-				lv+=3;
-				t.ttfbs = '\n评分：3分（页面文件偏大或者服务器性能遇到瓶颈）';
-			}else if(t.ttfb<=150 && t.ttfb>90){
-				lv+=4;
-				t.ttfbs = '\n评分：4分（白屏时间控制良好）';
-			}else{
-				lv+=5;
-				t.ttfbs = '\n评分：5分（几乎没有白屏出现）';
-			}
-			if(___nowTimes__>2000){
-				lv+=3;
-				___nowTimes__s = '\n评分：3分（js阻塞严重或者图片请求太多，占用太多带宽）';
-			}else if(___nowTimes__<=2000 && ___nowTimes__>1000){
-				lv+=4;
-				___nowTimes__s = '\n评分：4分（交互响应时间正常范围，但仍有优化空间，建议从减少请求数入手）';
-			}else{
-				lv+=5;
-				___nowTimes__s = '\n评分：5分（请求和资源体积优化良好）';
-			}
-			if(t.domready>5000){
-				lv+=3;
-				t.domreadys = '\n评分：3分（dom数过多，js阻塞严重，页面回流和重绘次数过多或CSS请求的背景图偏大）';
-			}else if(t.domready<=5000 && t.domready>2000){
-				lv+=4;
-				t.domreadys = '\n评分：4分（时间正常范围，但仍有优化空间，建议从优化dom操作和优化异步请求时机入手）';
-			}else{
-				lv+=5;
-				t.domreadys = '\n评分：5分（页面渲染较快）';
-			}
-			if(t.loadPage>9000){
-				lv+=3;
-				t.loadPages = '\n评分：3分（首屏全部资源过多，请求数多，请求资源量大，异步请求并发多）';
-			}else if(t.loadPage<=9000 && t.loadPage>4000){
-				lv+=4;
-				t.loadPages = '\n评分：4分（时间正常范围，但仍有优化空间，建议优先合理安排首屏资源请求，优化异步请求时机。）';
-			}else{
-				lv+=5;
-				t.loadPages = '\n评分：5分（首屏优化已非常优秀）';
-			}
-			if(t.length>150){
-				lv+=3;
-				t.lengths = '\n评分：3分（首次请求数过多）';
-			}else if(t.length<=150 && t.length>80){
-				lv+=4;
-				t.lengths = '\n评分：4分（首次请求偏多，请尽量优化减少）';
-			}else{
-				lv+=5;
-				t.lengths = '\n评分：5分（首次请求数控制良好）';
-			}
-			//var memory = Performance.memory.totalJSHeapSize-Performance.memory.usedJSHeapSize < 0;
-			lv = (lv*0.2).toFixed(2);
-
-			//lv = memory ? lv-1 : lv;
-			alert(
-			//'内存是否溢出:'+memory+
-			'白屏时间:'+ t.ttfb+'ms'+t.ttfbs+
-			'\n'+'DNS查询耗时:'+ t.lookupDomain+'ms'+
-			'\n'+'TCP链接耗时:'+ t.connect+'ms'+
-			'\n服务器响应时间:'+ t.request+'ms'+
-			'\n可操作时间(交互生效):'+ ___nowTimes__+'ms'+___nowTimes__s+
-			'\ndomReady的时间:'+ t.domready+'ms'+ t.domreadys+
-			'\n首屏资源加载完成时间:'+ t.loadPage+'ms'+ t.loadPages+
-			'\n首屏请求数:'+ (t.length+1)+'个'+ t.lengths+
-			'\n页面性能评级:'+lv+'【58cheFE标准4分以上】'
-			);
-		},3000);
-	});
-}
