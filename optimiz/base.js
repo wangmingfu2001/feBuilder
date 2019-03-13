@@ -1153,8 +1153,9 @@ setCache({
 	time: 1,//分
 	type : 'ss'
 });
-*/
 getCache('code');
+*/
+
 window.setCache = fe.setCache = function(arg){
 	if(typeof cacheDatas !='object'){
 		throw '缓存变量cacheDatas丢失';
@@ -1181,7 +1182,7 @@ window.setCache = fe.setCache = function(arg){
 		break;
 	}
 }
-window.getCache = fe.setCache = function(key){
+window.getCache = fe.getCache = function(key){
 	if(!key){ return null; }
 	if(cacheDatas[key]){
 		return cacheDatas[key];
