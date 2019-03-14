@@ -1144,18 +1144,19 @@ window.cacheDatas = {};
 !function(a,b){"function"==typeof define&&define.amd?define([],b):"undefined"!=typeof module&&module.exports?module.exports=b():a.lscache=b()}(this,function(){function a(){var a="__lscachetest__",c=a;if(void 0!==n)return n;try{if(!localStorage)return!1}catch(a){return!1}try{h(a,c),i(a),n=!0}catch(a){n=!(!b(a)||!localStorage.length)}return n}function b(a){return!!(a&&"QUOTA_EXCEEDED_ERR"===a.name||"NS_ERROR_DOM_QUOTA_REACHED"===a.name||"QuotaExceededError"===a.name)}function c(){return void 0===o&&(o=null!=window.JSON),o}function d(a){return a.replace(/[[\]{}()*+?.\\^$|]/g,"\\$&")}function e(a){return a+q}function f(){return Math.floor((new Date).getTime()/s)}function g(a){return localStorage.getItem(p+u+a)}function h(a,b){localStorage.removeItem(p+u+a),localStorage.setItem(p+u+a,b)}function i(a){localStorage.removeItem(p+u+a)}function j(a){for(var b=new RegExp("^"+p+d(u)+"(.*)"),c=localStorage.length-1;c>=0;--c){var f=localStorage.key(c);f=f&&f.match(b),f=f&&f[1],f&&f.indexOf(q)<0&&a(f,e(f))}}function k(a){var b=e(a);i(a),i(b)}function l(a){var b=e(a),c=g(b);if(c){var d=parseInt(c,r);if(f()>=d)return i(a),i(b),!0}}function m(a,b){v&&"console"in window&&"function"==typeof window.console.warn&&(window.console.warn("lscache - "+a),b&&window.console.warn("lscache - The error was: "+b.message))}var n,o,p="lscache-",q="-cacheexpiration",r=10,s=6e4,t=Math.floor(864e13/s),u="",v=!1,w={set:function(d,l,n){if(a()&&c()){try{l=JSON.stringify(l)}catch(a){return}try{h(d,l)}catch(a){if(!b(a))return void m("Could not add item with key '"+d+"'",a);var o,p=[];j(function(a,b){var c=g(b);c=c?parseInt(c,r):t,p.push({key:a,size:(g(a)||"").length,expiration:c})}),p.sort(function(a,b){return b.expiration-a.expiration});for(var q=(l||"").length;p.length&&q>0;)o=p.pop(),m("Cache is full, removing item with key '"+d+"'"),k(o.key),q-=o.size;try{h(d,l)}catch(a){return void m("Could not add item with key '"+d+"', perhaps it's too big?",a)}}n?h(e(d),(f()+n).toString(r)):i(e(d))}},get:function(b){if(!a())return null;if(l(b))return null;var d=g(b);if(!d||!c())return d;try{return JSON.parse(d)}catch(a){return d}},remove:function(b){a()&&k(b)},supported:function(){return a()},flush:function(){a()&&j(function(a){k(a)})},flushExpired:function(){a()&&j(function(a){l(a)})},setBucket:function(a){u=a},resetBucket:function(){u=""},enableWarnings:function(a){v=a}};return w});
 
 
-//type有四个值，temp(临时内存变量)，ss(sessionstory)，ls(localstory)，cookie(cookie)
-//示例
 /*
-setCache({
-	key : 'code',
-	val : {a:55,gg:{b:456}},
-	time: 1,//分
-	type : 'ss'
-});
-getCache('code');
+* @设置缓存
+* @参数：
+type有四个值，temp(临时内存变量)，ss(sessionstory)，ls(localstory)，cookie(cookie)
+* @示例：如下
+	setCache({
+		key : 'code',
+		val : {a:55,gg:{b:456}},
+		time: 1,//分
+		type : 'ss'
+	});
+	getCache('code');
 */
-
 window.setCache = fe.setCache = function(arg){
 	if(typeof cacheDatas !='object'){
 		throw '缓存变量cacheDatas丢失';
@@ -1203,14 +1204,6 @@ window.getCache = fe.getCache = function(key){
 	}
 }
 
-/****   服务   ****/
-
-
-
-/****   插件   ****/
-
-
-
 /****   page   ****/
 fe.page = function(arg){
 	return new Page('m',arg);
@@ -1239,6 +1232,10 @@ Page.prototype = {
 		if(this.host.match(/(tests.58che|box.58che|dev.58che|:)/g)){
 			this.pageScene = this.host.match(/(tests.58che|box.58che|dev.58che|:)/g)[0].match(/(tests|box|dev|:)/g)[0];
 			this.pageScene = this.pageScene==':' ? 'tests' : this.pageScene;
+		}else if(this.host=='localhost' || this.host=='127.0.0.1' || this.host==''){
+			this.pageScene = 'local';
+		}else if(location.port){
+			this.pageScene = 'local';
 		}
 		this.pageType = pageType;
 
@@ -1258,14 +1255,17 @@ Page.prototype = {
 		if(typeof pageCfg == 'undefined'){
 			window.pageCfg = {};
 		}
-
 		this.data = pageCfg;
 		this.rootUrl = typeof pageCfg.rootUrl !='undefined' ? pageCfg.rootUrl :  _httpStr+'//'+this.host;
 		if(pageCfg.filePath){
 			this.filePath = pageCfg.filePath
 		}else{
 			if(this.pageScene){
-				this.filePath = this.pageScene=='box' ? _httpStr+'//static-box.xgo-img.com.cn' : _httpStr+'//static-test.xgo-img.com.cn';
+				if(this.pageScene == 'local'){
+					this.filePath = '../../';
+				}else{
+					this.filePath = this.pageScene=='box' ? _httpStr+'//static-box.xgo-img.com.cn' : _httpStr+'//static-test.xgo-img.com.cn';
+				}
 			}else{
 				this.filePath = _httpStr+'//static.xgo-img.com.cn';
 			}
@@ -1323,7 +1323,7 @@ Page.prototype = {
 					_loadModules();
 				}else{
 					//装载js
-					fe.loadJs(_this.filePath+_modules[_moduleLoadIndex],function(){
+					fe.loadJs(_this.filePath+'mod/'+_modules[_moduleLoadIndex],function(){
 						_moduleLoadIndex++;
 						_loadModules();
 					});
@@ -1342,7 +1342,6 @@ Page.prototype = {
 		var _this = this;
 		//模块装载完毕，无模块等同onInitOver
 		if(typeof _this.config.onModLoadOver == 'function'){
-			_this.debug('onModLoadOver模块装载完毕');
 			_this.config.onModLoadOver(_this);
 		}
 
@@ -1355,7 +1354,12 @@ Page.prototype = {
 		if(typeof _this.config.onShow == 'function'){
 			fe.bind(window,'pageshow',function(){
 				_this.config.onShow();
-				_this.debug('onshow完毕');
+				_this.debug('onShow完毕');
+			});
+		}
+		if(typeof _this.config.onHide == 'function'){
+			fe.bind(window,'pagehide',function(){
+				_this.config.onHide();
 			});
 		}
 		if(typeof _this.config.onOrientationChange == 'function'){
@@ -1395,104 +1399,7 @@ Page.prototype = {
 				_this.config.onScroll(_re);
 			}
 		}
-
-
-
-		/** 支线流程处理(基于模块装载的定位，用户，画像等信息) **/
-		if(typeof _this.config.onDataReady == 'function'){
-			var re = {};
-			var _dbmsg1 = 'onDataReady完毕';
-			var _dbmsg = '位置，用户，画像准备完毕，支线流程开启';
-			_this.fn_user(function(data,msg){
-				re.uData = data;
-				_this.debug(msg);
-				if(re.uData && re.cData && re.fData){
-					_this.debug(_dbmsg1);
-					_this.debug(_dbmsg);
-					_this.config.onDataReady(re);
-				}
-			});
-			_this.fn_city(function(data,msg){
-				re.cData = data;
-				_this.debug(msg);
-				if(re.uData && re.cData && re.fData){
-					_this.debug(_dbmsg1);
-					_this.debug(_dbmsg);
-					_this.config.onDataReady(re);
-				}
-			});
-			_this.fn_face(function(data,msg){
-				re.fData = data;
-				_this.debug(msg);
-				if(re.uData && re.cData && re.fData){
-					_this.debug(_dbmsg1);
-					_this.debug(_dbmsg);
-					_this.config.onDataReady(re);
-				}
-			});
-		}
-
 		this.debug('事件绑定完成');
-	},
-
-	//用户数据获取
-	fn_user : function(cb){
-		var _this = this;
-		if(_this.config.userInfo){
-			var tmp1 = fe.cookie('userId'), tmp2 = fe.cookie('xgo_author');
-			if(tmp1){
-				fe.jsonp('//m.'+_this.pageScene+'.58che.com/home.php?c=ajax_NmainPage&a=UserInfo',{
-					userId : tmp1,
-					xgoAuthor : tmp2
-				},'callback',function(data){
-					if(data && data.data && data.data[0]){
-						cb(data.data[0],'用户获取完毕');
-					}else{
-						cb({userId : 0},'用户接口异常');
-					}
-				});
-			}else{
-				cb({userId : 0},'未登录');
-			}
-		}else{
-			cb({},'未开启用户获取');
-		}
-	},
-	//城市位置获取
-	fn_city : function(cb){
-		var _this = this;
-		if(!_this.config.position){
-			cb({
-				cityid : '613', cName : '北京', sid : '3'
-			},'未开启定位');
-			return;
-		}
-		//移动端定位处理
-		fe.position(_this.config.position,function(info,msg){
-			cb(info,msg);
-		});
-		//PC定位处理
-	},
-	//用户画像获取
-	fn_face : function(cb){
-		var _this = this;
-		if( typeof(id58) == 'undefined'){
-			cb({},'画像文件未引入');
-			return;
-		}
-		if(_this.config.faceInfo){
-			fe.jsonp('//apiche.58.com/index.php?r=face/v2/getInfo',{
-				cookieid : typeof(id58) != 'undefined' ? (id58) : ''
-			},'callback',function(data) {
-				if(data && data.data){
-					cb(data.data,'画像获取成功');
-				}else{
-					cb({},'画像接口异常');
-				}
-			});
-		}else{
-			cb({},'未开启画像');
-		}
 	},
 	debug : function(str){
 		if(Page.debug == 'alert'){
