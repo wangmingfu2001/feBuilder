@@ -1149,12 +1149,7 @@ window.cacheDatas = {};
 * @参数：
 type有四个值，temp(临时内存变量)，ss(sessionstory)，ls(localstory)，cookie(cookie)
 * @示例：如下
-	setCache({
-		key : 'code',
-		val : {a:55,gg:{b:456}},
-		time: 1,//分
-		type : 'ss'
-	});
+	setCache({ key : 'code', val : { a:55, gg:{b:456}}, time: 1, type : 'ls' });
 	getCache('code');
 */
 window.setCache = fe.setCache = function(arg){
@@ -1162,7 +1157,6 @@ window.setCache = fe.setCache = function(arg){
 		throw '缓存变量cacheDatas丢失';
 	}
 	if(!arg || !arg.key || !arg.val){ return; }
-
 	switch (arg.type){
 		case 'ss':
 			sessionStorage.setItem(arg.key,arg.val);
