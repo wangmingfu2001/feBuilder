@@ -5,6 +5,7 @@ package-lock.json
 /.project
 /tmp/
 /_source/
+
 /_compress/
 *.dump
 npm-debug.log
