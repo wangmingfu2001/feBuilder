@@ -1,0 +1,21 @@
+{
+    "js": [
+        {
+        	"version":2018071101,
+        	"author":"gaogao",
+        	"comment":"此版本改了什么功能"
+        }
+    ],
+    "css": [
+        {
+        	"version":2018062001,
+        	"author":"gaogao",
+        	"comment":"此版本改了什么功能"
+        }
+    ],
+    "htmlConfig":{
+        "projectInjectCss":true,
+        "injectJs":[],
+        "injectCss":[]
+    }
+}

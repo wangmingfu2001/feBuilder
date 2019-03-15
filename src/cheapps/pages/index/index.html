@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test</title>
+    <link rel="stylesheet" href="../../base.css">
+</head>
+<body style="height: 3000px;">
+
+    
+    
+
+</body>
+<script type="text/javascript" src="../../base.js" ></script>
+<script type="text/javascript">
+	var pageJson = {
+		a : 1,
+		b: function(){
+			console.log(fe.vm.v);
+			//alert(this.a)
+		}
+	};
+	var page = fe.page({
+		debug : 'log',
+		modules : ['fn.js','b.js','c.js'],
+		onStart : function(){ },
+		onModLoadOver : function(){
+			new Promise(function(resolve,reject){
+				resolve({
+					cityId : 613,
+					provinceId : 5
+				});
+			}).then(function(city){
+				console.log(city);
+			});
+		},
+		onLoad : function(){},
+		onShow : function(){},
+		onHide : function(){},
+		onOrientationChange : function(){},
+		onRsize : function(){},
+		onScroll : function(json){ }
+	});
+
+</script>
+</html>

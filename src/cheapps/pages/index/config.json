@@ -1,0 +1,21 @@
+{
+    "js": [
+        {
+        	"version":2018120301,
+        	"author":"mm",
+        	"comment":"有料立项"
+        }
+    ],
+    "css": [
+        {
+        	"version":2018120301,
+        	"author":"mm",
+        	"comment":"有料立项"
+        }
+    ],
+    "htmlConfig":{
+        "projectInjectCss":true,
+        "injectJs":[],
+        "injectCss":[]
+    }
+}

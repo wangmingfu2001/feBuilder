@@ -8,3 +8,5 @@ package-lock.json
 /_compress/
 *.dump
 npm-debug.log
+/output/
+/node_modules/
