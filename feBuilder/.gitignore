@@ -1,6 +1,0 @@
-/node_modules/
-/src/
-/output/
-*.dump
-package-lock.json
-/.idea/
